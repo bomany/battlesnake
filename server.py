@@ -24,7 +24,7 @@ def run_server(handlers: typing.Dict):
     @app.post("/move")
     def on_move():
         game_state = request.get_json()
-        return handlers["move"](MoveRequestObject.create_from_dict(game_state))
+        return handlers["move"](MoveRequestObject.create(game_state))
 
     @app.post("/end")
     def on_end():
