@@ -15,7 +15,7 @@ import typing
 
 from interfaces import MoveRequestObject, SnakeObject
 from enums import Direction
-from utils import check_if_point_is_neighbour, get_point_direction_relative
+from utils import check_if_point_is_neighbour, get_point_direction_relative, calculate_distance_between_two_points
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -114,7 +114,26 @@ def move(game_state: MoveRequestObject) -> typing.Dict:
     next_move = random.choice(safe_moves)
 
     # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-    # food = game_state['board']['food']
+    food = board.food
+    if len(food) > 0:
+        closest_food_distance = None
+        food_position = None
+
+        for f in food:
+            f_distance = calculate_distance_between_two_points(my_head, f)
+            if closest_food_distance is None or f_distance < closest_food_distance:
+                closest_food_distance = f_distance
+                food_position = f
+
+        if food_position is not None:
+            if food_position.x < my_head.x and is_move_safe[Direction.LEFT.value]:
+                next_move = Direction.LEFT.value
+            elif food_position.x > my_head.x and is_move_safe[Direction.RIGHT.value]:
+                next_move = Direction.RIGHT.value
+            elif food_position.y < my_head.y and is_move_safe[Direction.DOWN.value]:
+                next_move = Direction.DOWN.value
+            elif food_position.y > my_head.y and is_move_safe[Direction.UP.value]:
+                next_move = Direction.UP.value
 
     print(f"MOVE {game_state.turn}: {next_move}")
     return {"move": next_move}
